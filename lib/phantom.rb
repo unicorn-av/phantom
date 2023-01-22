@@ -7,15 +7,15 @@ module Phantom
 
   Minitest.after_run do
     @processes.each do |process|
-      Process.kill "TERM", process
-    rescue Errno::ECHILD
+      Process.kill "-TERM", process
+    rescue # rubocop:disable Style/RescueStandardError
       # do nothing
     end
   end
 
   def self.start(command, dir:, url:, env: {})
     puts "* Starting #{command}"
-    pid = Process.spawn(env, command, chdir: dir, err: NULL, in: NULL, out: NULL)
+    pid = Process.spawn(env, command, chdir: dir, err: NULL, in: NULL, out: NULL, pgroup: true)
 
     wait_for(url)
 
