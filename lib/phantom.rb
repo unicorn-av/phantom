@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Phantom
   NULL = "/dev/null"
 
@@ -7,10 +9,11 @@ module Phantom
     @processes.each do |process|
       Process.kill "TERM", process
     rescue Errno::ECHILD
+      # do nothing
     end
   end
 
-  def self.start(command, dir:, env: {}, url:)
+  def self.start(command, dir:, url:, env: {})
     puts "* Starting #{command}"
     pid = Process.spawn(env, command, chdir: dir, err: NULL, in: NULL, out: NULL)
 

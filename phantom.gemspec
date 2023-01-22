@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Gem::Specification.new do |s|
   s.name        = "phantom"
   s.version     = "0.0.1"
@@ -8,5 +10,9 @@ Gem::Specification.new do |s|
   s.homepage    = "https://github.com/unicorn-av/phantom.git"
   s.license     = "MIT"
 
+  s.metadata["rubygems_mfa_required"] = "true"
+
   s.add_dependency "minitest", ">= 5.1"
+
+  s.required_ruby_version = ">= 3.1"
 end
