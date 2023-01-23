@@ -31,7 +31,7 @@ module Phantom
   end
 
   def self.wait_for(url)
-    Timeout.timeout(10) do
+    Timeout.timeout(60) do
       return Net::HTTP.get(URI(url))
     rescue Errno::ECONNREFUSED
       sleep 1
