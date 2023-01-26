@@ -34,7 +34,7 @@ module Phantom
   def self.wait_for(tag)
     return if processes[tag][:loaded]
 
-    Timeout.timeout(120) do
+    Timeout.timeout(240) do
       Net::HTTP.get(URI(processes[tag][:url]))
 
       processes[tag][:loaded] = true
