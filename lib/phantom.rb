@@ -3,28 +3,44 @@
 module Phantom
   NULL = "/dev/null"
 
-  @processes = []
+  @processes = {}
+
+  def self.processes
+    @processes
+  end
 
   Minitest.after_run do
-    @processes.each do |process|
-      Process.kill "-TERM", process
+    processes.each do |_, process|
+      Process.kill "-TERM", process[:pid]
     rescue # rubocop:disable Style/RescueStandardError
       # do nothing
     end
   end
 
-  def self.start(command, dir:, url:, env: {})
-    puts "* Starting #{command}"
+  def self.start(tag, command, dir:, url:, env: {})
+    puts "* Starting #{tag}"
     pid = Process.spawn(env, command, chdir: dir, err: NULL, in: NULL, out: NULL, pgroup: true)
 
-    wait_for(url)
-
-    @processes.push(pid)
+    processes[tag] = {
+      command: command,
+      dir: dir,
+      url: url,
+      env: env,
+      pid: pid,
+      loaded: false
+    }
   end
 
-  def self.wait_for(url)
+  def self.wait_for(tag)
+    return if processes[tag][:loaded]
+
     Timeout.timeout(60) do
-      return Net::HTTP.get(URI(url))
+      Net::HTTP.get(URI(processes[tag][:url]))
+
+      processes[tag][:loaded] = true
+
+      puts "* Started #{tag}"
+      return
     rescue Errno::ECONNREFUSED
       sleep 1
       retry
